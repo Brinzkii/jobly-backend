@@ -1,10 +1,10 @@
 'use strict';
 /** Database setup for jobly. */
 const { Client } = require('pg');
-const parse = require('pg-connection-string').parse;
 const dotenv = require('dotenv');
 const { getDatabaseUri } = require('./config');
 dotenv.config();
+let db;
 
 let ssl = null;
 
@@ -15,19 +15,14 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.CONNECTION_STRING) {
-	const config = parse(process.env.CONNECTION_STRING);
-	let db = new Client({
-		user: config.user,
-		host: config.host,
-		database: config.database,
-		password: config.password,
-		port: config.port,
-		ssl: ssl,
+	console.log(process.env.CONNECTION_STRING);
+	db = new Client({
+		connectionString: process.env.CONNECTION_STRING,
 	});
 } else {
 	const { USER, HOST, PASSWORD, PORT } = process.env;
 
-	let db = new Client({
+	db = new Client({
 		user: USER,
 		host: HOST,
 		database: getDatabaseUri(),
